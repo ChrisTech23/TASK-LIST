@@ -1,7 +1,7 @@
-import express from 'express';
-import serverless from "serverless-http"
+import express from "express";
+import serverless from "serverless-http";
 import cors from "cors";
-import { fetchTasks, createTasks, updateTasks } from './task';
+import { fetchTasks, createTasks, updateTasks, deleteTasks } from "./task.js";
 
 const app = express();
 const port = 3001;
@@ -12,55 +12,55 @@ if (process.env.DEVELOPMENT) {
   app.use(cors());
 }
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
-app.get('/task', async (req, res) => {
-    try {
-      const tasks = await fetchTasks();
+app.get("/task", async (req, res) => {
+  try {
+    const tasks = await fetchTasks();
 
-      res.send(tasks.items);
-    } catch (err) {
-      res.status(400).send('Error fetching tasks: ${err}');
-    }
-  });
-  
-  app.post('/task', async (req, res) => {
-    try {
-      const task = req.body;
+    res.send(tasks.Items);
+  } catch (err) {
+    res.status(400).send(`Error fetching tasks: ${err}`);
+  }
+});
 
-      const response = await createTasks(task);
+app.post("/task", async (req, res) => {
+  try {
+    const task = req.body;
 
-      res.send(response)
-    } catch (err) {
-      res.status(400).send('Error creating tasks: ${err}');
-    }
-  });
+    const response = await createTasks(task);
 
-  app.put('/task', async (req, res) => {
-    try {
-      const task = req.body;
+    res.send(response);
+  } catch (err) {
+    res.status(400).send(`Error creating tasks: ${err}`);
+  }
+});
 
-      const response = await updateTasks(task);
+app.put("/task", async (req, res) => {
+  try {
+    const task = req.body;
 
-      res.send(response)
-    } catch (err) {
-      res.status(400).send('Error updating tasks: ${err}');
-    }
-  });
+    const response = await updateTasks(task);
 
-  app.delete('/task/:id', async (req, res) => {
-    try {
-      const {id} = req.params;
+    res.send(response);
+  } catch (err) {
+    res.status(400).send(`Error updating tasks: ${err}`);
+  }
+});
 
-      const response = await deleteTasks(id);
+app.delete("/task/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-      res.send(response)
-    } catch (err) {
-      res.status(400).send('Error deleting tasks: ${err}');
-    }
-  });
+    const response = await deleteTasks(id);
+
+    res.send(response);
+  } catch (err) {
+    res.status(400).send(`Error deleting tasks: ${err}`);
+  }
+});
 
 if (process.env.DEVELOPMENT) {
   app.listen(port, () => {
